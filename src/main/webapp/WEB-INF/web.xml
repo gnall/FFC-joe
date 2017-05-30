@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  GwtMaterial
+  %%
+  Copyright (C) 2015 - 2016 GwtMaterialDesign
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+
+<web-app>
+    <servlet>
+
+        <!-- NOTE: the integration-test profile uses this web.xml. Integration tests only work properly
+             with the DefaultBlockingServlet. If you change this setting, alter the integration-test
+             profile in pom.xml to use a different web.xml (for example, maybe src/tomcat/web.xml) -->
+        <servlet-name>ErraiServlet</servlet-name>
+        <servlet-class>org.jboss.errai.bus.server.servlet.DefaultBlockingServlet</servlet-class>
+        <init-param>
+            <param-name>auto-discover-services</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ErraiServlet</servlet-name>
+        <url-pattern>*.erraiBus</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>com_google_gwt_junit_server_JUnitHostImpl</servlet-name>
+        <servlet-class>com.google.gwt.junit.server.JUnitHostImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>com_google_gwt_junit_server_JUnitHostImpl</servlet-name>
+        <url-pattern>/App/junithost/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AuthenticationService</servlet-name>
+        <servlet-class>washo.gmd.app.server.AuthenticationServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthenticationService</servlet-name>
+        <url-pattern>/App/authentication</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+    	<servlet-name>getGameListServlet</servlet-name>
+    	<servlet-class>washo.gmd.app.server.CreateGameServiceImpl</servlet-class>
+  	</servlet>
+  
+  	<servlet-mapping>
+    	<servlet-name>getGameListServlet</servlet-name>
+    	<url-pattern>/App/creategame</url-pattern>
+ 	</servlet-mapping>
+
+</web-app>
