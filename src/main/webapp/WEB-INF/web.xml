@@ -66,5 +66,15 @@
     	<servlet-name>getGameListServlet</servlet-name>
     	<url-pattern>/App/creategame</url-pattern>
  	</servlet-mapping>
+ 	
+ 	<servlet>
+    	<servlet-name>getUserCheckServlet</servlet-name>
+    	<servlet-class>washo.gmd.app.server.UserServiceImpl</servlet-class>
+  	</servlet>
+  
+  	<servlet-mapping>
+    	<servlet-name>getUserCheckServlet</servlet-name>
+    	<url-pattern>/App/usercheck</url-pattern>
+ 	</servlet-mapping>
 
 </web-app>

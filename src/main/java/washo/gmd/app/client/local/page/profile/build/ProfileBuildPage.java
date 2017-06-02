@@ -194,9 +194,9 @@ public class ProfileBuildPage extends Page {
     	 
 		console.log("AFTER INITIALIZE");
     	// Get a reference to the database service
-    
-    	var x = $wnd.firebase.auth().createUserWithEmailAndPassword(email, password);
-    	console.log(x);
+    	auth = $wnd.firebase.auth();
+    	var provider = new firebase.auth.GoogleAuthProvider();
+  		$wnd.auth.signInWithPopup(provider);
 ////    	function onSuccess(imageData) {
 ////    		accountCreateCallback.@washo.gmd.client.app.client.local.page.profile.build.ProfileBuildPage.CreateAccountCallback::onSuccess(Ljava/lang/String;)(imageData);
 ////    	}

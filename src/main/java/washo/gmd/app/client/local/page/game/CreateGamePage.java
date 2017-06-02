@@ -60,12 +60,14 @@ import washo.gmd.app.client.local.page.dashboard.list.CreateGameService;
 import washo.gmd.app.client.local.page.dashboard.list.CreateGameServiceAsync;
 import washo.gmd.app.client.local.events.GameCreated;
 import washo.gmd.app.client.local.events.UpdateNavBarContent;
+import washo.gmd.app.client.local.events.UserSignin;
 import washo.gmd.app.shared.Game;
 
 import java.util.Date;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @Templated
@@ -116,6 +118,9 @@ public class CreateGamePage extends Page implements HasNavigation {
     CreateGameServiceAsync createGameService;
     
     String selectedFieldType = "";
+    String name = "", FBid =  "";
+    Integer id = -1;
+    Game game = new Game();
 
     @Override
     public void onPostConstruct() {
@@ -135,29 +140,13 @@ public class CreateGamePage extends Page implements HasNavigation {
         create.setWidth("100%");
 
         create.addClickHandler(clickEvent -> {
-            Game game = new Game();
+        	this.createGameService = GWT.create(CreateGameService.class);
             game.setTitle(title.getValue());
             Date test = date.getDate();Long date = test.getTime();game.setDate(date);
             game.setLocationInfo(locationInfo.getValue());
             game.setFieldType(whatFieldType());
-            
-            this.createGameService = GWT.create(CreateGameService.class);
-            this.createGameService.createGame(game, new AsyncCallback<Integer>(){
-
-    			@Override
-    			public void onFailure(Throwable caught) {
-    				GWT.log(caught.getMessage());
-    				
-    			}
-
-				@Override
-				public void onSuccess(Integer result) {
-					GWT.log("SUCCESSFULLY RETURNED GAME ID");
-					GWT.log("THIS IS THE RESULT " + result);
-					
-				}
-        		
-        	});
+            getGameOwnerID();
+        
             dashboardPage.go();
             
             //gameCreated.fire(new GameCreated(new Game(title.getValue(), date.getDate().toString(), locationInfo.getValue(), fieldType.getValue())));
@@ -191,6 +180,7 @@ public class CreateGamePage extends Page implements HasNavigation {
         });
     }
     
+    
     private int whatFieldType(){
     	if(selectedFieldType.contentEquals("Turf")){
     		return 1;
@@ -199,5 +189,46 @@ public class CreateGamePage extends Page implements HasNavigation {
     		return 0;
     	}
     }
+    
+    public void onUserSignIn(@Observes UserSignin event) {
+        name = event.getUser().getName();
+        FBid = event.getUser().getId();
+        GWT.log("USER SIGNED IN " + name + " " + FBid);
+    }
+    
+    private void getGameOwnerID(){
+    	GWT.log("THIS IS THE FBid Passed to impl: " +  FBid);
+    	this.createGameService.getUserByFbId(FBid, new AsyncCallback<Integer>(){
+     		@Override
+     		public void onFailure(Throwable caught) {
+     			GWT.log("Cant find user by FB id");
+     		}
+     		
+     		@Override
+     		public void onSuccess(Integer result) {
+     			GWT.log("This is the game owner id returned: " +result);
+     			game.setGameOwner(result);
+     			createGame();
+     		}
+     	
+     });
+    }
+    
+    
+    private void createGame(){
+    		
+    	this.createGameService.createGame(game, new AsyncCallback<Integer>(){
 
+    			@Override
+    			public void onFailure(Throwable caught) {
+    				GWT.log(caught.getMessage());
+    			}
+			
+    			@Override
+    			public void onSuccess(Integer result) {
+    				GWT.log("THIS IS THE RESULT " + result);
+    			}
+			
+    		});
+    }
 }

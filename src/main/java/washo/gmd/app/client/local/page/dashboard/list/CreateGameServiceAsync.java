@@ -11,4 +11,5 @@ public interface CreateGameServiceAsync
 	void selectRecordsFromDbGameTable(AsyncCallback<List<Game>> callback) throws GetGameServiceException;
 	void returnString(AsyncCallback<String> callback);
 	void createGame(Game game, AsyncCallback<Integer> asyncCallback);
+	void getUserByFbId(String fBid, AsyncCallback<Integer> asyncCallback);
 }

@@ -19,6 +19,8 @@
  */
 package washo.gmd.app.client.local.widget;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.inject.Inject;
 import gwt.material.design.client.constants.Color;
@@ -28,6 +30,12 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import washo.gmd.app.client.local.AppConstants;
 import washo.gmd.app.client.local.events.UserSignin;
+import washo.gmd.app.client.local.page.dashboard.list.CreateGameService;
+import washo.gmd.app.client.local.page.dashboard.list.CreateGameServiceAsync;
+import washo.gmd.app.client.local.page.dashboard.list.ListPage.GetGameServiceException;
+import washo.gmd.app.shared.Game;
+
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
@@ -50,9 +58,17 @@ public class SideNav extends Composite {
 
     @Inject
     MaterialLabel id;
+    
+    UserServiceAsync userService;
 
     @PostConstruct
-    protected void init() {
+    protected void init() throws GetGameServiceException {
+    	Boolean adminVal = false;
+    	this.userService = GWT.create(UserService.class);
+    	adminVal = isUserAdmin();
+    	
+    	
+    	
         sideNav.setId("sideNav");
         sideNav.setWidth(280);
         sideNav.reinitialize();
@@ -80,11 +96,41 @@ public class SideNav extends Composite {
 
         sideNav.add(option1);
         sideNav.add(option2);
-        sideNav.add(option3);
+        
+        
     }
 
     public void onUserSignIn(@Observes UserSignin event) {
         name.setText(event.getUser().getName());
         id.setText(event.getUser().getId());
+    }
+    
+    private Boolean isUserAdmin(){
+    	Boolean x = false;
+    	userService.isAdmin("1", new AsyncCallback<Boolean>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				GWT.log("isUserAdmin fail");
+				
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				GWT.log("isUserAdmin success " + result);
+				if(result == true){
+					addCreateGameLink();
+				}
+			}
+     });
+    	GWT.log("THIS IS THE X RETURNED " + x);
+		return x;
+    }
+    
+    private void addCreateGameLink(){
+    	MaterialLink option3 = new MaterialLink("Stripe");
+        option3.setIconType(IconType.PAYMENT);
+        option3.setHref(AppConstants.STRIPE_LINK);
+        sideNav.add(option3);
     }
 }

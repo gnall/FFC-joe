@@ -142,9 +142,7 @@ public class CreateGameServiceImpl extends RemoteServiceServlet implements Creat
 
 		String insertTableSQL = "INSERT INTO Game"
 				+ "(gameOwner, title, coordinates, locationInfo, fieldType ) " + "VALUES"
-				+ "(1,'"+game.getTitle()+"','"+game.getCoordinates()+"','"+ game.getLocationInfo() + "','" + game.getFieldType()+"')";
-
-		
+				+ "('"+game.getGameOwner()+"','"+game.getTitle()+"','"+game.getCoordinates()+"','"+ game.getLocationInfo() + "','" + game.getFieldType()+"')";
 		/*
 		 * "INSERT INTO Game"
 				+ "(gameOwner, title, coordinates, locationInfo, fieldType ) " + "VALUES"
@@ -180,6 +178,48 @@ public class CreateGameServiceImpl extends RemoteServiceServlet implements Creat
 		}
 		
 		return gameId;
+	}
+
+	@Override
+	public Integer getUserByFbId(String fBid) {
+		Connection dbConnection = null;
+		Statement statement = null;
+
+		Integer result = -1;
+		
+		String selectTableSQL = "SELECT userID FROM UserProfile WHERE facebookID = " + fBid;
+		try {
+			dbConnection = getDBConnection();
+			statement = dbConnection.createStatement();
+
+			System.out.println(selectTableSQL);
+
+			// execute select SQL statement
+			ResultSet rs = statement.executeQuery(selectTableSQL);
+
+			while (rs.next()) {
+				result = rs.getInt("userID");
+				log.warning("This is the user id "+result);
+			}
+
+		} catch (SQLException e) {
+			log.info(e.getMessage());
+			System.out.println(e.getMessage());
+
+		}
+		
+		try {
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			log.info(e.getMessage());
+		}try {
+			dbConnection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			log.info(e.getMessage());
+		}
+		return result;
 	}
 
 	
